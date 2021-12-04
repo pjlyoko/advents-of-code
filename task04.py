@@ -10,6 +10,8 @@ class BingoBoard:
         self.score = None
 
     def mark_number_if_exists(self, number):
+        if self.bingo:
+            return
         self.__last_called_number = number
         for y in range(0, 5):
             for x in range(0, 5):
@@ -62,17 +64,22 @@ if __name__ == '__main__':
 
             line = reader.readline()
 
-    for drawn_number in drawn_numbers:
-        print(f"Drawn number: {drawn_number}")
+    # HACK: Unfortunately, the last board is not included due to the code. Refactoring needed.
+    bingo_boards.append(BingoBoard(board))
+    winning_boards_indexes = []
 
+    for drawn_number in drawn_numbers:
         results = []
         for board in bingo_boards:
             board.mark_number_if_exists(drawn_number)
             results.append(board.bingo)
 
-        if True in results:
-            which_board_won = results.index(True)
-            print(f"Board {which_board_won} won! It's score is {bingo_boards[which_board_won].score}")
-            break
-        else:
-            print("No winners here.")
+        for (index, value) in enumerate(results):
+            if value:
+                if index not in winning_boards_indexes:
+                    winning_boards_indexes.append(index)
+
+    first_won = winning_boards_indexes[0]
+    last_won = winning_boards_indexes[-1]
+    print(f"First won: board #{first_won} with score of {bingo_boards[first_won].score}.")
+    print(f"Last won: board #{last_won} with score of {bingo_boards[last_won].score}.")
